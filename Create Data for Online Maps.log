@@ -1,0 +1,69 @@
+1                                          The SAS System         12:38 Thursday, September 21, 2017
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to BROWN UNIVERSITY - SFA T&R, Site 70094301.
+NOTE: This session is executing on the X64_8HOME  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+WARNING: Your system is scheduled to expire on October 29, 2017, which is 38 days from now. The SAS 
+         System will no longer function on or after that date. Please contact your SAS Installation 
+         Representative to obtain your updated SAS Installation Data (SID) file, which includes 
+         SETINIT information.
+To locate the name of your SAS Installation Representative go to http://support.sas.com/repfinder 
+and provide your site number 70094301 and company name as BROWN UNIVERSITY - SFA T&R. On the SAS 
+REP list provided, locate the REP for operating system Windows.
+NOTE: Additional host information:
+
+ X64_8HOME WIN 6.2.9200  Workstation
+
+NOTE: SAS initialization used:
+      real time           4.65 seconds
+      cpu time            0.31 seconds
+      
+1          libname home "Z:\Projects\Preparing 1880 Files\Online Maps\Data";
+NOTE: Libref HOME was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: Z:\Projects\Preparing 1880 Files\Online Maps\Data
+1        !                                                                   run;
+2          
+3          
+4          data city_seg_id; set home.allcities;
+WARNING: The Base SAS Software product with which DATASTEP is associated will be expiring soon, and 
+         is currently in warning mode to indicate this upcoming expiration. Please run PROC SETINIT 
+         to obtain more information on your warning period.
+5          keep
+6          NonOver_SegG_id NonOver_ExtG_id
+7          Segment_id city street
+8          city_seg_id;
+9          run;
+
+ERROR: User asked for termination
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: SAS set option OBS=0 and will continue to check statements. 
+      This might cause NOTE: No observations in data set.
+NOTE: There were 1588 observations read from the data set HOME.ALLCITIES.
+WARNING: The data set WORK.CITY_SEG_ID may be incomplete.  When this step was stopped there were 
+         1588 observations and 6 variables.
+2                                          The SAS System         12:38 Thursday, September 21, 2017
+
+NOTE: DATA statement used (Total process time):
+      real time           8.02 seconds
+      cpu time            0.29 seconds
+      
+ERROR: Errors printed on page 1.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           14.02 seconds
+      cpu time            0.62 seconds
+      
