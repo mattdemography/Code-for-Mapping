@@ -1,0 +1,63 @@
+#Bring In Libraries
+#Library List
+library(foreign)
+library(car)
+library(plyr)
+library(reshape2)
+library(rgdal)
+
+sumby<- function(x,y){
+  y1<-deparse(substitute(y))
+  y2<-unlist((strsplit(as.character(y1), "[$]")))[2]
+  myvars<-"y"
+  nrows<-length(x)
+  df<-data.frame(x=numeric(), y=numeric())
+  df<-rename(df, c(x=y2, y=y))
+  for(i in 1:nrows){
+    x2<-(colnames(x[i]))
+    t<-(tapply(x[,i], INDEX=list(y), FUN=sum, na.rm=T))
+    df2<-data.frame(x=names(t), y=t)
+    df2<-rename(df2, c(x=y2, y=x2))
+    df<-merge(df, df2, by=y2, all=T, accumulate=T)
+    df<-df[!names(df) %in% myvars]
+  }
+  df
+}
+
+#Bring in all data to build one file with all cities
+citylist<-read.csv(("Z:/Projects/Preparing 1880 Files/City Lists.csv"))
+citylist <- data.frame(lapply(citylist, as.character), stringsAsFactors=FALSE)
+Cityname<-citylist$Cityname
+rows<-nrow(citylist)
+
+for(i in 1:rows){
+
+#Bring in Points Shapefile
+  setwd(paste("Z:/Projects/Preparing 1880 Files/Ben Results/", Cityname[i], "/", sep=""))
+  Points<-readOGR(dsn=getwd(), layer=paste(Cityname[i],"_OffStreet_Geocode_4_24_17", sep=""))
+  
+  #Create Person Counter for Aggregation  
+  Points$hh<-as.numeric(recode(Points$serial,"\" \"=0; else=1"))
+  
+  #Calculate number of households per match address
+  units<-sumby(Points@data[,c("hh", "hh")], Points$Match_addr)
+  units<-rename(units, c("hh"="multiunit"))
+  units$multiunit<-ifelse(units$multiunit>1, 1, 0)
+  myvars<-c("Match_addr", "multiunit")
+  units<-units[myvars]
+  
+  Points<-merge(x=Points, y=units, by="Match_addr", all.x=T)
+  myvars<-c("multiunit")
+  
+  Single<-subset(Points, Points$multiunit==0)
+  Single<-Single[!names(Single) %in% myvars]
+  setwd(paste("Z:/Projects/Preparing 1880 Files/Online Maps/Shapefiles/Single Unit/", sep=""))
+  writeOGR(Single, dsn=getwd(), paste(Cityname[i],"_SingleUnit",sep=""),check_exists = TRUE,
+           overwrite_layer = TRUE, driver="ESRI Shapefile")
+  
+  Multi<-subset(Points, Points$multiunit==1)
+  Multi<-Multi[!names(Multi) %in% myvars]
+  setwd(paste("Z:/Projects/Preparing 1880 Files/Online Maps/Shapefiles/Multi Unit/", sep=""))
+  writeOGR(Multi, dsn=getwd(), paste(Cityname[i],"_MultiUnit",sep=""),check_exists = TRUE,
+         overwrite_layer = TRUE, driver="ESRI Shapefile")
+}
